@@ -2,8 +2,6 @@
 Sistem chatbot yang dirancang untuk memberikan informasi terkait gelaja penyakit **Infeksi Saluran Pernapasan Akut (ISPA)** secara interaktif.  
 Proyek ini dikembangkan sebagai bagian dari tugas besar IN268 - Pemrosesan Bahasa Alami.
 
----
-
 ## 👥 Anggota Kelompok
 | NPM       | Nama                            |
 |-----------|----------------------------------|
