@@ -1,0 +1,994 @@
+[
+  {
+    "id": 0,
+    "tokens": [
+      "Dok,",
+      "saya",
+      "mengalami",
+      "batuk",
+      "kering",
+      "yang",
+      "parah",
+      "sejak",
+      "3",
+      "hari",
+      "lalu."
+    ],
+    "ner_tags": [
+      "O",
+      "O",
+      "O",
+      "B-G02",
+      "I-G02",
+      "O",
+      "B-INTENSITAS",
+      "O",
+      "B-DURASI",
+      "I-DURASI",
+      "O"
+    ]
+  },
+  {
+    "id": 1,
+    "tokens": [
+      "Kepala",
+      "rasanya",
+      "pusing",
+      "berat",
+      "dan",
+      "badan",
+      "lemas."
+    ],
+    "ner_tags": [
+      "O",
+      "O",
+      "B-G04",
+      "B-INTENSITAS",
+      "O",
+      "O",
+      "B-G06"
+    ]
+  },
+  {
+    "id": 2,
+    "tokens": [
+      "Anak",
+      "saya",
+      "demam",
+      "tinggi",
+      "naik",
+      "turun",
+      "sudah",
+      "seminggu."
+    ],
+    "ner_tags": [
+      "O",
+      "O",
+      "B-G01",
+      "B-INTENSITAS",
+      "O",
+      "O",
+      "O",
+      "B-DURASI"
+    ]
+  },
+  {
+    "id": 3,
+    "tokens": [
+      "Tenggorokan",
+      "sakit",
+      "banget",
+      "buat",
+      "nelan",
+      "dari",
+      "kemarin",
+      "sore."
+    ],
+    "ner_tags": [
+      "O",
+      "B-G05",
+      "B-INTENSITAS",
+      "O",
+      "O",
+      "O",
+      "B-DURASI",
+      "I-DURASI"
+    ]
+  },
+  {
+    "id": 4,
+    "tokens": [
+      "Hidung",
+      "mampet",
+      "total,",
+      "susah",
+      "napas",
+      "sudah",
+      "2",
+      "jam."
+    ],
+    "ner_tags": [
+      "O",
+      "B-G03",
+      "B-INTENSITAS",
+      "O",
+      "O",
+      "O",
+      "B-DURASI",
+      "I-DURASI"
+    ]
+  },
+  {
+    "id": 5,
+    "tokens": [
+      "Saya",
+      "merasa",
+      "sesak",
+      "napas",
+      "sedikit",
+      "kalau",
+      "berjalan",
+      "jauh."
+    ],
+    "ner_tags": [
+      "O",
+      "O",
+      "B-G07",
+      "I-G07",
+      "B-INTENSITAS",
+      "O",
+      "O",
+      "O"
+    ]
+  },
+  {
+    "id": 6,
+    "tokens": [
+      "Pilek",
+      "nggak",
+      "sembuh-sembuh",
+      "udah",
+      "sebulan",
+      "dok."
+    ],
+    "ner_tags": [
+      "B-G03",
+      "O",
+      "O",
+      "O",
+      "B-DURASI",
+      "O"
+    ]
+  },
+  {
+    "id": 7,
+    "tokens": [
+      "Badan",
+      "menggigil",
+      "hebat",
+      "pas",
+      "malam",
+      "hari."
+    ],
+    "ner_tags": [
+      "O",
+      "B-G01",
+      "B-INTENSITAS",
+      "O",
+      "O",
+      "O"
+    ]
+  },
+  {
+    "id": 8,
+    "tokens": [
+      "Cuma",
+      "bersin-bersin",
+      "biasa",
+      "aja",
+      "sih,",
+      "tapi",
+      "sering."
+    ],
+    "ner_tags": [
+      "O",
+      "B-G03",
+      "B-INTENSITAS",
+      "O",
+      "O",
+      "O",
+      "O"
+    ]
+  },
+  {
+    "id": 9,
+    "tokens": [
+      "Nyeri",
+      "dada",
+      "menusuk",
+      "saat",
+      "menarik",
+      "napas",
+      "dalam."
+    ],
+    "ner_tags": [
+      "B-G14",
+      "I-G14",
+      "B-INTENSITAS",
+      "O",
+      "O",
+      "O",
+      "O"
+    ]
+  },
+  {
+    "id": 10,
+    "tokens": [
+      "Suara",
+      "saya",
+      "serak",
+      "parah,",
+      "hampir",
+      "hilang",
+      "suaranya."
+    ],
+    "ner_tags": [
+      "O",
+      "O",
+      "B-G12",
+      "B-INTENSITAS",
+      "O",
+      "O",
+      "O"
+    ]
+  },
+  {
+    "id": 11,
+    "tokens": [
+      "Batuk",
+      "berdahak",
+      "warna",
+      "hijau",
+      "sudah",
+      "5",
+      "hari."
+    ],
+    "ner_tags": [
+      "B-G02",
+      "I-G02",
+      "O",
+      "O",
+      "O",
+      "B-DURASI",
+      "I-DURASI"
+    ]
+  },
+  {
+    "id": 12,
+    "tokens": [
+      "Dok,",
+      "dada",
+      "terasa",
+      "sesak",
+      "banget",
+      "kayak",
+      "ditindih."
+    ],
+    "ner_tags": [
+      "O",
+      "O",
+      "O",
+      "B-G07",
+      "B-INTENSITAS",
+      "O",
+      "O"
+    ]
+  },
+  {
+    "id": 13,
+    "tokens": [
+      "Saya",
+      "mual",
+      "dan",
+      "muntah-muntah",
+      "dari",
+      "tadi",
+      "pagi."
+    ],
+    "ner_tags": [
+      "O",
+      "O",
+      "O",
+      "O",
+      "O",
+      "B-DURASI",
+      "I-DURASI"
+    ]
+  },
+  {
+    "id": 14,
+    "tokens": [
+      "Tulang-tulang",
+      "rasanya",
+      "ngilu",
+      "semua",
+      "sejak",
+      "kemarin."
+    ],
+    "ner_tags": [
+      "O",
+      "O",
+      "O",
+      "B-INTENSITAS",
+      "O",
+      "B-DURASI"
+    ]
+  },
+  {
+    "id": 15,
+    "tokens": [
+      "Hidung",
+      "berair",
+      "terus,",
+      "nggak",
+      "berhenti",
+      "udah",
+      "2",
+      "hari."
+    ],
+    "ner_tags": [
+      "B-G03",
+      "I-G03",
+      "O",
+      "O",
+      "O",
+      "O",
+      "B-DURASI",
+      "I-DURASI"
+    ]
+  },
+  {
+    "id": 16,
+    "tokens": [
+      "Leher",
+      "bengkak",
+      "dan",
+      "nyeri",
+      "telan",
+      "yang",
+      "sangat",
+      "mengganggu."
+    ],
+    "ner_tags": [
+      "O",
+      "O",
+      "O",
+      "B-G05",
+      "I-G05",
+      "O",
+      "B-INTENSITAS",
+      "I-INTENSITAS"
+    ]
+  },
+  {
+    "id": 17,
+    "tokens": [
+      "Napas",
+      "anak",
+      "saya",
+      "bunyi",
+      "ngik-ngik",
+      "kencang",
+      "sekali."
+    ],
+    "ner_tags": [
+      "O",
+      "O",
+      "O",
+      "B-G09",
+      "I-G09",
+      "B-INTENSITAS",
+      "O"
+    ]
+  },
+  {
+    "id": 18,
+    "tokens": [
+      "Kepala",
+      "sakit",
+      "nyut-nyutan",
+      "di",
+      "sebelah",
+      "kanan."
+    ],
+    "ner_tags": [
+      "O",
+      "B-G04",
+      "B-INTENSITAS",
+      "O",
+      "O",
+      "O"
+    ]
+  },
+  {
+    "id": 19,
+    "tokens": [
+      "Kondisi",
+      "badan",
+      "panas",
+      "tinggi",
+      "sampai",
+      "39",
+      "derajat."
+    ],
+    "ner_tags": [
+      "O",
+      "O",
+      "B-G01",
+      "B-INTENSITAS",
+      "O",
+      "O",
+      "O"
+    ]
+  },
+  {
+    "id": 20,
+    "tokens": [
+      "Udah",
+      "seminggu",
+      "ini",
+      "batuk",
+      "terus",
+      "pas",
+      "malam."
+    ],
+    "ner_tags": [
+      "O",
+      "B-DURASI",
+      "O",
+      "B-G02",
+      "O",
+      "O",
+      "O"
+    ]
+  },
+  {
+    "id": 21,
+    "tokens": [
+      "Dok,",
+      "saya",
+      "susah",
+      "napas",
+      "parah",
+      "kalau",
+      "tidur",
+      "telentang."
+    ],
+    "ner_tags": [
+      "O",
+      "O",
+      "B-G07",
+      "I-G07",
+      "B-INTENSITAS",
+      "O",
+      "O",
+      "O"
+    ]
+  },
+  {
+    "id": 22,
+    "tokens": [
+      "Mata",
+      "berair",
+      "dan",
+      "hidung",
+      "gatal",
+      "banget."
+    ],
+    "ner_tags": [
+      "O",
+      "B-G03",
+      "O",
+      "B-G03",
+      "I-G03",
+      "B-INTENSITAS"
+    ]
+  },
+  {
+    "id": 23,
+    "tokens": [
+      "Dahak",
+      "susah",
+      "keluar,",
+      "nyangkut",
+      "di",
+      "tenggorokan",
+      "sudah",
+      "lama."
+    ],
+    "ner_tags": [
+      "B-G02",
+      "O",
+      "O",
+      "O",
+      "O",
+      "O",
+      "B-DURASI",
+      "I-DURASI"
+    ]
+  },
+  {
+    "id": 24,
+    "tokens": [
+      "Badan",
+      "rasanya",
+      "meriang",
+      "sedikit",
+      "sih",
+      "dok."
+    ],
+    "ner_tags": [
+      "O",
+      "O",
+      "B-G01",
+      "B-INTENSITAS",
+      "O",
+      "O"
+    ]
+  },
+  {
+    "id": 25,
+    "tokens": [
+      "Radang",
+      "tenggorokan",
+      "kambuh",
+      "lagi,",
+      "sakitnya",
+      "lumayan."
+    ],
+    "ner_tags": [
+      "B-G05",
+      "I-G05",
+      "O",
+      "O",
+      "O",
+      "B-INTENSITAS"
+    ]
+  },
+  {
+    "id": 26,
+    "tokens": [
+      "Batuk",
+      "sampai",
+      "muntah,",
+      "saking",
+      "kencangnya."
+    ],
+    "ner_tags": [
+      "B-G02",
+      "O",
+      "O",
+      "O",
+      "O"
+    ]
+  },
+  {
+    "id": 27,
+    "tokens": [
+      "Saya",
+      "merasa",
+      "kelelahan",
+      "yang",
+      "ekstrem",
+      "tanpa",
+      "sebab."
+    ],
+    "ner_tags": [
+      "O",
+      "O",
+      "B-G06",
+      "O",
+      "B-INTENSITAS",
+      "O",
+      "O"
+    ]
+  },
+  {
+    "id": 28,
+    "tokens": [
+      "Hidung",
+      "tersumbat",
+      "sebelah",
+      "kiri",
+      "saja."
+    ],
+    "ner_tags": [
+      "B-G03",
+      "I-G03",
+      "B-INTENSITAS",
+      "O",
+      "O"
+    ]
+  },
+  {
+    "id": 29,
+    "tokens": [
+      "Dok,",
+      "ingus",
+      "saya",
+      "kental",
+      "dan",
+      "berwarna",
+      "kuning",
+      "pekat."
+    ],
+    "ner_tags": [
+      "O",
+      "B-G03",
+      "O",
+      "O",
+      "O",
+      "O",
+      "O",
+      "B-INTENSITAS"
+    ]
+  },
+  {
+    "id": 30,
+    "tokens": [
+      "Sakit",
+      "kepala",
+      "bagian",
+      "depan",
+      "terasa",
+      "berat."
+    ],
+    "ner_tags": [
+      "B-G04",
+      "I-G04",
+      "O",
+      "O",
+      "B-INTENSITAS",
+      "I-INTENSITAS"
+    ]
+  },
+  {
+    "id": 31,
+    "tokens": [
+      "Napas",
+      "jadi",
+      "pendek-pendek",
+      "dan",
+      "cepat."
+    ],
+    "ner_tags": [
+      "O",
+      "O",
+      "B-INTENSITAS",
+      "O",
+      "B-G08"
+    ]
+  },
+  {
+    "id": 32,
+    "tokens": [
+      "Demam",
+      "mendadak",
+      "tadi",
+      "malam,",
+      "panas",
+      "banget."
+    ],
+    "ner_tags": [
+      "B-G01",
+      "O",
+      "O",
+      "O",
+      "B-G01",
+      "B-INTENSITAS"
+    ]
+  },
+  {
+    "id": 33,
+    "tokens": [
+      "Tenggorokan",
+      "gatal",
+      "dan",
+      "kering",
+      "sekali."
+    ],
+    "ner_tags": [
+      "O",
+      "B-G05",
+      "O",
+      "B-G05",
+      "B-INTENSITAS"
+    ]
+  },
+  {
+    "id": 34,
+    "tokens": [
+      "Batuk",
+      "rejan",
+      "yang",
+      "keras",
+      "sudah",
+      "dua",
+      "minggu."
+    ],
+    "ner_tags": [
+      "B-G02",
+      "I-G02",
+      "O",
+      "B-INTENSITAS",
+      "O",
+      "B-DURASI",
+      "I-DURASI"
+    ]
+  },
+  {
+    "id": 35,
+    "tokens": [
+      "Penciuman",
+      "saya",
+      "hilang",
+      "total",
+      "sejak",
+      "pagi."
+    ],
+    "ner_tags": [
+      "B-G11",
+      "O",
+      "B-INTENSITAS",
+      "I-INTENSITAS",
+      "B-DURASI",
+      "I-DURASI"
+    ]
+  },
+  {
+    "id": 36,
+    "tokens": [
+      "Dada",
+      "terasa",
+      "panas",
+      "dan",
+      "terbakar",
+      "sedikit."
+    ],
+    "ner_tags": [
+      "O",
+      "O",
+      "B-G14",
+      "O",
+      "B-G14",
+      "B-INTENSITAS"
+    ]
+  },
+  {
+    "id": 37,
+    "tokens": [
+      "Anak",
+      "rewel",
+      "karena",
+      "pilek",
+      "dan",
+      "hidung",
+      "buntu."
+    ],
+    "ner_tags": [
+      "O",
+      "O",
+      "O",
+      "B-G03",
+      "O",
+      "B-G03",
+      "I-G03"
+    ]
+  },
+  {
+    "id": 38,
+    "tokens": [
+      "Suara",
+      "hilang",
+      "sama",
+      "sekali,",
+      "nggak",
+      "bisa",
+      "ngomong",
+      "3",
+      "hari."
+    ],
+    "ner_tags": [
+      "B-G12",
+      "I-G12",
+      "O",
+      "O",
+      "O",
+      "O",
+      "O",
+      "B-DURASI",
+      "I-DURASI"
+    ]
+  },
+  {
+    "id": 39,
+    "tokens": [
+      "Tiap",
+      "nelan",
+      "ludah",
+      "sakitnya",
+      "minta",
+      "ampun",
+      "dok,",
+      "parah."
+    ],
+    "ner_tags": [
+      "O",
+      "O",
+      "O",
+      "B-G05",
+      "O",
+      "O",
+      "O",
+      "B-INTENSITAS"
+    ]
+  },
+  {
+    "id": 40,
+    "tokens": [
+      "Bibir",
+      "kering",
+      "dan",
+      "pecah-pecah",
+      "karena",
+      "panas",
+      "dalam."
+    ],
+    "ner_tags": [
+      "O",
+      "O",
+      "O",
+      "O",
+      "O",
+      "O",
+      "O"
+    ]
+  },
+  {
+    "id": 41,
+    "tokens": [
+      "Dok,",
+      "saya",
+      "bersin",
+      "terus",
+      "menerus",
+      "non-stop."
+    ],
+    "ner_tags": [
+      "O",
+      "O",
+      "B-G03",
+      "O",
+      "O",
+      "B-INTENSITAS"
+    ]
+  },
+  {
+    "id": 42,
+    "tokens": [
+      "Kepala",
+      "kliyeran",
+      "sedikit",
+      "kalau",
+      "bangun",
+      "tidur."
+    ],
+    "ner_tags": [
+      "O",
+      "B-G04",
+      "B-INTENSITAS",
+      "O",
+      "O",
+      "O"
+    ]
+  },
+  {
+    "id": 43,
+    "tokens": [
+      "Badan",
+      "lemah",
+      "letih",
+      "lesu,",
+      "nggak",
+      "ada",
+      "tenaga",
+      "seharian."
+    ],
+    "ner_tags": [
+      "O",
+      "B-G06",
+      "O",
+      "O",
+      "O",
+      "O",
+      "O",
+      "B-DURASI"
+    ]
+  },
+  {
+    "id": 44,
+    "tokens": [
+      "Napas",
+      "berat",
+      "dan",
+      "berbunyi",
+      "grok-grok."
+    ],
+    "ner_tags": [
+      "B-G07",
+      "I-G07",
+      "O",
+      "O",
+      "B-G09"
+    ]
+  },
+  {
+    "id": 45,
+    "tokens": [
+      "Saya",
+      "curiga",
+      "flu,",
+      "badan",
+      "sakit",
+      "semua."
+    ],
+    "ner_tags": [
+      "O",
+      "O",
+      "B-G03",
+      "O",
+      "O",
+      "O"
+    ]
+  },
+  {
+    "id": 46,
+    "tokens": [
+      "Demam",
+      "cuma",
+      "sumer-sumer",
+      "(hangat",
+      "kuku)",
+      "aja",
+      "kok."
+    ],
+    "ner_tags": [
+      "B-G01",
+      "O",
+      "B-INTENSITAS",
+      "O",
+      "O",
+      "O",
+      "O"
+    ]
+  },
+  {
+    "id": 47,
+    "tokens": [
+      "Batuknya",
+      "jarang-jarang",
+      "tapi",
+      "sakit",
+      "di",
+      "dada."
+    ],
+    "ner_tags": [
+      "B-G02",
+      "B-INTENSITAS",
+      "O",
+      "B-G14",
+      "O",
+      "O"
+    ]
+  }
+]
