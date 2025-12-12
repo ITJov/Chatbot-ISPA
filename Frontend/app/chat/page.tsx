@@ -1,9 +1,10 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { SendOutlined } from "@ant-design/icons";
 import { chatSuggestions, chatHistoryDummy } from "./data";
 import DiagnosisResult from "../components/DiagnosisResult";
+import ListDokter from "../components/ListDokter";
 
 type Message = {
   sender: "user" | "bot";
@@ -18,6 +19,10 @@ export default function ChatPage() {
 
   const [userSentCount, setUserSentCount] = useState(0);
   const [showDiagnosis, setShowDiagnosis] = useState(false);
+
+  // ✅ refs untuk auto scroll
+  const messagesContainerRef = useRef<HTMLDivElement | null>(null);
+  const messagesEndRef = useRef<HTMLDivElement | null>(null);
 
   const sidebarItems = [
     {
@@ -34,6 +39,11 @@ export default function ChatPage() {
     },
   ];
   const [activeSidebar, setActiveSidebar] = useState(0);
+
+  const scrollToBottom = (behavior: ScrollBehavior = "smooth") => {
+    // cara paling aman: scroll ke elemen penanda di bawah
+    messagesEndRef.current?.scrollIntoView({ behavior, block: "end" });
+  };
 
   const sendMessage = () => {
     if (!input.trim()) return;
@@ -69,6 +79,17 @@ export default function ChatPage() {
       setShowDiagnosis(true);
     }
   }, [userSentCount, showDiagnosis]);
+
+  // ✅ Auto-scroll setiap ada message baru / diagnosis muncul
+  useEffect(() => {
+    scrollToBottom("smooth");
+  }, [messages, showDiagnosis]);
+
+  // ✅ (opsional) saat pertama kali render, lompat ke bawah tanpa animasi
+  useEffect(() => {
+    scrollToBottom("auto");
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <div className="w-screen h-screen flex items-stretch justify-center bg-gradient-to-br from-[#f7f4ff] via-[#e4e9ff] to-[#f8fbff]">
@@ -133,7 +154,10 @@ export default function ChatPage() {
           </div>
 
           {/* Chat messages + hasil diagnosa di dalam area scroll */}
-          <div className="flex-1 overflow-y-auto pr-3 space-y-5 pb-8">
+          <div
+            ref={messagesContainerRef}
+            className="flex-1 overflow-y-auto pr-3 space-y-5 pb-8 no-scrollbar"
+          >
             {messages.map((m, i) => (
               <div key={i}>
                 <div className="text-[10px] text-gray-400 font-semibold mb-1 uppercase tracking-wide">
@@ -155,8 +179,12 @@ export default function ChatPage() {
             {showDiagnosis && (
               <div className="mt-8">
                 <DiagnosisResult />
+                <ListDokter />
               </div>
             )}
+
+            {/* ✅ penanda paling bawah */}
+            <div ref={messagesEndRef} />
           </div>
 
           {/* Input */}
@@ -164,7 +192,7 @@ export default function ChatPage() {
             <input
               className="flex-1 px-4 py-3 bg-white/90 border border-indigo-200 
                 rounded-full text-sm outline-none focus:ring-2 focus:ring-indigo-300"
-              placeholder="Silahkan tanya gejala penyakit anda"
+              placeholder="Silakan tanya gejala penyakit anda"
               value={input}
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={handleKeyDown}

@@ -21,11 +21,11 @@ const diagnosisData: DiagnosisItem[] = [
 export default function DiagnosisResult() {
   return (
     <section className="mt-10 mb-4">
-      <h2 className="text-center text-lg font-semibold text-gray-800 mb-8">
+      <h2 className="text-center text-lg font-semibold text-gray-800 mb-5">
         Hasil Diagnosa
       </h2>
 
-      <div className="flex flex-wrap justify-center gap-8">
+      <div className="flex flex-wrap justify-center gap-10">
         {diagnosisData.map((item, i) => (
           <DiagnosisCard key={i} name={item.name} value={item.value} />
         ))}
@@ -99,7 +99,7 @@ function DiagnosisCard({ name, value }: CardProps) {
   };
 
   return (
-    <div className="w-72 h-72 bg-white/90 rounded-3xl shadow-xl flex flex-col items-center justify-center">
+    <div className="w-72 h-72 bg-white/90 rounded-3xl shadow-xl flex flex-col items-center justify-center mb-5">
       <div className="w-48 h-48 flex items-center justify-center">
         <ReactApexChart
           options={options}
