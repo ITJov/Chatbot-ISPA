@@ -1,17 +1,28 @@
 import json
 import numpy as np
+import shutil
+import os
 from datasets import Dataset
 from transformers import AutoTokenizer, AutoModelForTokenClassification, TrainingArguments, Trainer, DataCollatorForTokenClassification
 
-#
+# === KONFIGURASI ===
 DATASET_PATH = "../Dataset/dataset_training.json" 
 OUTPUT_DIR = "./model_output" 
-BASE_MODEL = "distilbert-base-uncased"
-# =============================================
+BASE_MODEL = "distilbert-base-uncased" # Model dasar yang ringan & cepat
+# ===================
+
+# 0. Bersihkan folder output lama agar tidak konflik
+if os.path.exists(OUTPUT_DIR):
+    print(f"Menghapus folder lama {OUTPUT_DIR}...")
+    shutil.rmtree(OUTPUT_DIR)
 
 print("1. Memuat Dataset...")
-with open(DATASET_PATH, 'r') as f:
-    raw_data = json.load(f)
+try:
+    with open(DATASET_PATH, 'r') as f:
+        raw_data = json.load(f)
+except FileNotFoundError:
+    print(f"ERROR: File dataset tidak ditemukan di {DATASET_PATH}")
+    exit()
 
 # Ambil semua unique tags dari dataset untuk bikin kamus label
 unique_tags = set()
@@ -31,7 +42,7 @@ hf_dataset = Dataset.from_list(raw_data)
 print("2. Tokenisasi Data...")
 tokenizer = AutoTokenizer.from_pretrained(BASE_MODEL)
 
-# Fungsi untuk memecah kalimat jadi token angka & merapikan label
+# Fungsi untuk memecah kalimat jadi token angka & merapikan label (Alignment)
 def tokenize_and_align_labels(examples):
     tokenized_inputs = tokenizer(examples["tokens"], truncation=True, is_split_into_words=True)
     labels = []
@@ -41,7 +52,7 @@ def tokenize_and_align_labels(examples):
         label_ids = []
         for word_idx in word_ids:
             if word_idx is None:
-                label_ids.append(-100) 
+                label_ids.append(-100) # Abaikan special token
             elif word_idx != previous_word_idx:
                 label_ids.append(label2id[label[word_idx]])
             else:
@@ -54,6 +65,7 @@ def tokenize_and_align_labels(examples):
 tokenized_datasets = hf_dataset.map(tokenize_and_align_labels, batched=True)
 
 print("3. Menyiapkan Model...")
+# PENTING: id2label & label2id dimasukkan di sini agar tersimpan di config.json
 model = AutoModelForTokenClassification.from_pretrained(
     BASE_MODEL, 
     num_labels=len(label_list),
@@ -68,7 +80,9 @@ args = TrainingArguments(
     per_device_train_batch_size=8,
     num_train_epochs=50, 
     weight_decay=0.01,
-    save_strategy="epoch"
+    save_strategy="epoch",
+    save_total_limit=2, 
+    logging_steps=10
 )
 
 data_collator = DataCollatorForTokenClassification(tokenizer)
@@ -81,11 +95,11 @@ trainer = Trainer(
     data_collator=data_collator,
 )
 
-print("4. MULAI TRAINING... (Tunggu sebentar)")
+print("4. MULAI TRAINING... (Proses ini memakan waktu)")
 trainer.train()
 
-print("5. Menyimpan Model...")
+print("5. Menyimpan Model Final...")
 model.save_pretrained(OUTPUT_DIR)
 tokenizer.save_pretrained(OUTPUT_DIR)
 
-print(f"SELESAI! Model tersimpan di folder '{OUTPUT_DIR}'")
+print(f"✅ SELESAI! Model tersimpan di folder '{OUTPUT_DIR}'")

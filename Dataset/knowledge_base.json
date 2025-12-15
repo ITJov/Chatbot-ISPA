@@ -1,0 +1,65 @@
+[
+  {
+    "kode": "K08",
+    "nama": "Common Cold (Selesma)",
+    "gejala_kunci": ["G03", "G02", "G01"],
+    "saran": "Istirahat cukup, minum air hangat, dan konsumsi vitamin C.",
+    "bahaya": false
+  },
+  {
+    "kode": "K09",
+    "nama": "ILI (Influenza Like Illness)",
+    "gejala_kunci": ["G01", "G04", "G06", "G03"],
+    "saran": "Minum obat penurun panas (parasetamol), istirahat total. Jika demam >3 hari segera ke dokter.",
+    "bahaya": false
+  },
+  {
+    "kode": "K01",
+    "nama": "Sinusitis",
+    "gejala_kunci": ["G03", "G04", "G11"],
+    "saran": "Gunakan kompres hangat di wajah, irigasi hidung, dan hindari udara dingin.",
+    "bahaya": false
+  },
+  {
+    "kode": "K02",
+    "nama": "Faringitis (Radang Tenggorokan)",
+    "gejala_kunci": ["G05", "G01", "G12"],
+    "saran": "Hindari gorengan/es, kumur air garam hangat, perbanyak minum.",
+    "bahaya": false
+  },
+  {
+    "kode": "K04",
+    "nama": "Bronkitis",
+    "gejala_kunci": ["G02", "G14", "G07"],
+    "saran": "Hindari asap rokok, gunakan humidifier. Perlu antibiotik jika diresepkan dokter.",
+    "bahaya": true
+  },
+  {
+    "kode": "K06",
+    "nama": "Pneumonia (Paru-paru Basah)",
+    "gejala_kunci": ["G07", "G01", "G14", "G08"],
+    "saran": "⚠️ SEGERA KE IGD/RS. Ini kondisi serius yang memerlukan rontgen dan penanganan medis.",
+    "bahaya": true
+  },
+  {
+    "kode": "K03",
+    "nama": "Epiglotitis",
+    "gejala_kunci": ["G12", "G05", "G07"],
+    "saran": "Segera periksa ke dokter THT, terutama jika sulit bernapas.",
+    "bahaya": true
+  },
+  {
+    "kode": "K05",
+    "nama": "Bronkiolitis",
+    "gejala_kunci": ["G08", "G09", "G02"],
+    "saran": "Pantau frekuensi napas. Jika napas terlihat berat/cepat, bawa ke faskes.",
+    "bahaya": true
+  },
+  {
+    "kode": "K07",
+    "nama": "Pleuritis",
+    "gejala_kunci": ["G14", "G02", "G07"],
+    "saran": "Konsultasi ke dokter paru untuk pemeriksaan lebih lanjut.",
+    "bahaya": true
+  }
+]
