@@ -1,0 +1,166 @@
+{
+  "jessica": {
+    "chats": {
+      "chat_1": {
+        "title": "selama 1 minggu dada saya tera",
+        "messages": [
+          {
+            "sender": "user",
+            "message": "selama 1 minggu dada saya terasa sesak."
+          },
+          {
+            "sender": "bot",
+            "message": "Saya mencatat gejala: Sesak Napas.\nPola ini mirip dengan Bronkitis, Epiglotitis, Pleuritis.\n\nUntuk memastikan, apakah Anda juga merasakan Nyeri Dada atau Batuk?"
+          },
+          {
+            "sender": "user",
+            "message": "nyeri dada"
+          },
+          {
+            "sender": "bot",
+            "message": "Berdasarkan kombinasi Nyeri Dada, Sesak Napas, analisis saya mengarah pada Bronkitis (66.7% kecocokan).\n\nSaran Medis: Hindari asap rokok, gunakan humidifier. Perlu antibiotik jika diresepkan dokter."
+          },
+          {
+            "sender": "user",
+            "message": "saya batuk hari in"
+          },
+          {
+            "sender": "bot",
+            "message": "Berdasarkan kombinasi Nyeri Dada, Batuk, Sesak Napas, analisis saya mengarah pada Bronkitis (100.0% kecocokan).\n\nSaran Medis: Hindari asap rokok, gunakan humidifier. Perlu antibiotik jika diresepkan dokter."
+          }
+        ],
+        "diagnosis": {
+          "is_confident": true,
+          "top": [
+            {
+              "name": "Bronkitis",
+              "value": 100.0,
+              "symptoms": [
+                {
+                  "code": "G14",
+                  "name": "Nyeri Dada",
+                  "percent": 33.3
+                },
+                {
+                  "code": "G02",
+                  "name": "Batuk",
+                  "percent": 33.3
+                },
+                {
+                  "code": "G07",
+                  "name": "Sesak Napas",
+                  "percent": 33.3
+                }
+              ],
+              "total": 3
+            },
+            {
+              "name": "Pleuritis",
+              "value": 100.0,
+              "symptoms": [
+                {
+                  "code": "G14",
+                  "name": "Nyeri Dada",
+                  "percent": 33.3
+                },
+                {
+                  "code": "G02",
+                  "name": "Batuk",
+                  "percent": 33.3
+                },
+                {
+                  "code": "G07",
+                  "name": "Sesak Napas",
+                  "percent": 33.3
+                }
+              ],
+              "total": 3
+            },
+            {
+              "name": "Pneumonia (Paru-paru Basah)",
+              "value": 50.0,
+              "symptoms": [
+                {
+                  "code": "G14",
+                  "name": "Nyeri Dada",
+                  "percent": 25.0
+                },
+                {
+                  "code": "G07",
+                  "name": "Sesak Napas",
+                  "percent": 25.0
+                }
+              ],
+              "total": 4
+            }
+          ]
+        }
+      },
+      "chat_2": {
+        "title": "saya sedang sakit panas tinggi",
+        "messages": [
+          {
+            "sender": "user",
+            "message": "saya sedang sakit panas tinggi, dan pilek."
+          },
+          {
+            "sender": "bot",
+            "message": "Berdasarkan kombinasi Demam, Pilek, analisis saya mengarah pada Common Cold (Selesma) (66.7% kecocokan).\n\nSaran Medis: Istirahat cukup, minum air hangat, dan konsumsi vitamin C."
+          }
+        ],
+        "diagnosis": {
+          "is_confident": true,
+          "top": [
+            {
+              "name": "Common Cold (Selesma)",
+              "value": 66.7,
+              "symptoms": [
+                {
+                  "code": "G01",
+                  "name": "Demam",
+                  "percent": 33.3
+                },
+                {
+                  "code": "G03",
+                  "name": "Pilek",
+                  "percent": 33.3
+                }
+              ],
+              "total": 3
+            },
+            {
+              "name": "ILI (Influenza Like Illness)",
+              "value": 50.0,
+              "symptoms": [
+                {
+                  "code": "G01",
+                  "name": "Demam",
+                  "percent": 25.0
+                },
+                {
+                  "code": "G03",
+                  "name": "Pilek",
+                  "percent": 25.0
+                }
+              ],
+              "total": 4
+            },
+            {
+              "name": "Sinusitis",
+              "value": 33.3,
+              "symptoms": [
+                {
+                  "code": "G03",
+                  "name": "Pilek",
+                  "percent": 33.3
+                }
+              ],
+              "total": 3
+            }
+          ]
+        }
+      }
+    },
+    "active_chat": "chat_2"
+  }
+}
