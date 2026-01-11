@@ -1,7 +1,7 @@
 export const chatSuggestions = [
   "Saya mengalami gejala batuk berat",
-  "Saya sedang sakit panas tinggi, dan pilek. penyakit apa ya kira-kira",
-  "Apa ciri-ciri orang dengan penyakit ISPA."
+  "Saya sedang sakit panas tinggi, dan pilek.",
+  "Selama 1 minggu dada saya terasa sesak."
 ];
 
 export const chatHistoryDummy = [

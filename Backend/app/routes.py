@@ -4,11 +4,55 @@ from flask import Blueprint, request, jsonify
 from app.services.ai_service import extract_symptoms
 from collections import Counter
 
+CHAT_HISTORY_FILE = os.path.join(
+    os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
+    "..", "Dataset", "chat_history.json"
+)
+
+def load_chat_history():
+    if not os.path.exists(CHAT_HISTORY_FILE):
+        return {}
+    with open(CHAT_HISTORY_FILE, "r", encoding="utf-8") as f:
+        return json.load(f)
+
+def save_chat_history(data):
+    with open(CHAT_HISTORY_FILE, "w", encoding="utf-8") as f:
+        json.dump(data, f, indent=2, ensure_ascii=False)
+
+def load_users():
+    base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    file_path = os.path.join(base_dir, '..', 'Dataset', 'users.json')
+
+    try:
+        with open(file_path, "r", encoding="utf-8") as f:
+            return json.load(f)
+    except FileNotFoundError:
+        return []
+
+
 main = Blueprint('main', __name__)
 
 # --- KONFIGURASI FILE MEMORI ---
 # Ingatan akan disimpan di file ini, bukan di RAM
 MEMORY_FILE = 'session_memory.json'
+
+def ensure_user_chat(history, username):
+    if username not in history:
+        history[username] = {
+            "chats": {},
+            "active_chat": None
+        }
+
+    # JIKA BELUM ADA CHAT SAMA SEKALI
+    if not history[username]["chats"]:
+        chat_id = "chat_1"
+        history[username]["chats"][chat_id] = {
+            "title": "Chat Baru",
+            "messages": []
+        }
+        history[username]["active_chat"] = chat_id
+
+
 
 def load_memory():
     """Membaca ingatan dari file JSON"""
@@ -33,10 +77,12 @@ def load_knowledge_base():
     base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__))) 
     file_path = os.path.join(base_dir, '..', 'Dataset', 'knowledge_base.json')
     try:
-        with open(file_path, 'r') as f:
+        with open(file_path, 'r', encoding='utf-8', errors='replace') as f:
             return json.load(f)
-    except FileNotFoundError:
+    except Exception as e:
+        print("ERROR LOAD KNOWLEDGE BASE:", e)
         return []
+
 
 PENYAKIT_DB = load_knowledge_base()
 
@@ -71,6 +117,7 @@ MANUAL_KEYWORDS = {
 def chat():
     data = request.json
     user_message = data.get('message', '').lower()
+    username = data.get("username", "anonymous")
     
     # Gunakan Session ID dari frontend, atau IP sebagai fallback
     session_id = data.get('session_id') or request.remote_addr
@@ -82,7 +129,9 @@ def chat():
     current_symptoms = set(all_memory.get(session_id, []))
 
     # 2. AUTO-RESET
-    reset_keywords = ['halo', 'hi', 'hai', 'pagi', 'reset', 'ulang', 'clear', 'mulai', 'tes']
+    reset_keywords = ['reset', 'ulang', 'clear']
+    greeting_keywords = ['halo', 'hi', 'hai', 'pagi', 'siang', 'malam']
+
     if any(word in user_message for word in reset_keywords):
         current_symptoms = set() # Kosongkan di variabel
         all_memory[session_id] = [] # Kosongkan di file
@@ -118,50 +167,100 @@ def chat():
         save_memory(all_memory)
     
     # --- LOGIKA DIAGNOSA ---
-    gejala_display = [GEJALA_MAP.get(g, g) for g in current_symptoms]
-    gejala_str = ", ".join(gejala_display)
+        gejala_display = [GEJALA_MAP.get(g, g) for g in current_symptoms]
+        gejala_str = ", ".join(gejala_display)
 
-    diagnosa_list = []
-    if current_symptoms:
-        for penyakit in PENYAKIT_DB:
-            kunci = set(penyakit.get('gejala_kunci', []))
-            cocok = len(current_symptoms.intersection(kunci))
-            total_kunci = len(kunci)
-            confidence = (cocok / total_kunci) * 100 if total_kunci > 0 else 0
-            
-            if confidence > 0:
+        diagnosa_list = []
+
+        if current_symptoms:
+            for penyakit in PENYAKIT_DB:
+                kunci = set(penyakit.get('gejala_kunci', []))
+                matched = current_symptoms.intersection(kunci)
+
+                cocok = len(matched)
+                total_kunci = len(kunci)
+
+                if total_kunci == 0 or cocok == 0:
+                    continue
+
+                confidence = round((cocok / total_kunci) * 100, 1)
+                per_symptom_weight = round(100 / total_kunci, 1)
+
                 diagnosa_list.append({
-                    "nama": penyakit['nama'],
-                    "confidence": round(confidence, 1),
-                    "saran": penyakit['saran'],
-                    "missing": list(kunci - current_symptoms),
-                    "gejala_cocok": cocok
+                    "nama": penyakit["nama"],
+                    "confidence": confidence,
+                    "saran": penyakit["saran"],
+                    "total_symptoms": total_kunci,
+                    "matched_symptoms": [
+                        {
+                            "code": g,
+                            "name": GEJALA_MAP.get(g, g),
+                            "percent": per_symptom_weight
+                        }
+                        for g in matched
+                    ]
                 })
-        diagnosa_list = sorted(diagnosa_list, key=lambda x: (x['confidence'], x['gejala_cocok']), reverse=True)
+
+            diagnosa_list.sort(
+                key=lambda x: x["confidence"],
+                reverse=True
+            )
+
+    # === PENENTUAN TOP DIAGNOSA & TINGKAT KEYAKINAN ===
+    top_diagnosis = []
+    is_confident = False
+
+    if diagnosa_list:
+        top3 = diagnosa_list[:3]
+        top_diagnosis = [
+            {
+                "name": d["nama"],
+                "value": d["confidence"],
+                "symptoms": d["matched_symptoms"],
+                "total": d["total_symptoms"]
+            }
+            for d in top3
+        ]
+
+        # Sistem dianggap yakin jika confidence tertinggi >= 60%
+        if top3[0]["confidence"] >= 60:
+            is_confident = True
 
     # 5. RESPONSE BUILDER
     if not current_symptoms:
         bot_text = "Maaf, saya belum menangkap gejala medis spesifik. Bisa ceritakan apa yang Anda rasakan?"
 
     # Jika gejala ada, tapi confidence masih rendah (< 60%)
-    elif diagnosa_list and diagnosa_list[0]['confidence'] < 60:
-        top_candidates = diagnosa_list[:3]
-        all_missing = []
-        for d in top_candidates:
-            all_missing.extend(d['missing'])
-        
-        if all_missing:
-            # Cari gejala pembeda yang paling sering muncul
-            most_common = Counter(all_missing).most_common(2)
-            saran_gejala = [GEJALA_MAP.get(code) for code, count in most_common]
-            pertanyaan = " atau ".join(filter(None, saran_gejala))
-            potential_names = ", ".join([d['nama'] for d in top_candidates])
-            
-            bot_text = (f"Saya mencatat gejala: {gejala_str}.\n"
-                        f"Pola ini mirip dengan {potential_names}.\n\n"
-                        f"Untuk memastikan, apakah Anda juga merasakan {pertanyaan}?")
-        else:
-             bot_text = f"Gejala {gejala_str} tercatat, namun belum cukup spesifik untuk diagnosa pasti."
+    elif diagnosa_list and diagnosa_list[0]["confidence"] < 60:
+      top_candidates = diagnosa_list[:3]
+      all_missing = []
+
+      for d in top_candidates:
+          penyakit = next(
+              p for p in PENYAKIT_DB if p["nama"] == d["nama"]
+          )
+          kunci = set(penyakit.get("gejala_kunci", []))
+          matched_codes = {s["code"] for s in d["matched_symptoms"]}
+
+          missing = kunci - matched_codes
+          all_missing.extend(list(missing))
+
+      if all_missing:
+          most_common = Counter(all_missing).most_common(2)
+          saran_gejala = [GEJALA_MAP.get(code) for code, _ in most_common]
+          pertanyaan = " atau ".join(filter(None, saran_gejala))
+          potential_names = ", ".join([d["nama"] for d in top_candidates])
+
+          bot_text = (
+              f"Saya mencatat gejala: {gejala_str}.\n"
+              f"Pola ini mirip dengan {potential_names}.\n\n"
+              f"Untuk memastikan, apakah Anda juga merasakan {pertanyaan}?"
+          )
+      else:
+          bot_text = (
+              f"Gejala {gejala_str} tercatat, namun belum cukup spesifik "
+              f"untuk diagnosa pasti."
+          )
 
     # Jika confidence tinggi (>= 60%)
     elif diagnosa_list:
@@ -171,5 +270,119 @@ def chat():
                     f"Saran Medis: {top['saran']}")
     else:
         bot_text = "Gejala tercatat, namun belum cocok dengan database penyakit ISPA."
+        
+    history = load_chat_history()
+    ensure_user_chat(history, username)
 
-    return jsonify({"response": bot_text})
+    active_chat = history[username]["active_chat"]
+    chat = history[username]["chats"][active_chat]
+    
+    # diagnosis history
+    if is_confident:
+      chat["diagnosis"] = {
+          "is_confident": True,
+          "top": top_diagnosis
+      }
+    else:
+      chat["diagnosis"] = None
+
+    # SIMPAN PESAN USER
+    chat["messages"].append({
+        "sender": "user",
+        "message": user_message
+    })
+
+    # JUDUL CHAT DARI PESAN PERTAMA USER
+    if len(chat["messages"]) == 1:
+        chat["title"] = user_message[:30]
+
+    # SIMPAN PESAN BOT
+    chat["messages"].append({
+        "sender": "bot",
+        "message": bot_text
+    })
+
+    save_chat_history(history)
+
+    return jsonify({
+        "response": bot_text,
+        "diagnosis": {
+            "is_confident": is_confident,
+            "top": top_diagnosis
+        }
+    })
+
+  
+@main.route('/login', methods=['POST'])
+def login():
+    data = request.get_json()
+
+    if not data:
+        return jsonify({"message": "Request tidak valid"}), 400
+
+    username = data.get("username")
+    password = data.get("password")
+
+    if not username or not password:
+        return jsonify({"message": "Username dan password wajib diisi"}), 400
+
+    users = load_users()
+
+    for user in users:
+        if user["username"] == username and user["password"] == password:
+            return jsonify({
+                "message": "Login berhasil",
+                "user": {
+                    "username": user["username"],
+                    "role": user.get("role", "user")
+                }
+            }), 200
+
+    return jsonify({"message": "Username atau password salah"}), 401
+
+@main.route("/chat/history/<username>", methods=["GET"])
+def get_chat_history(username):
+    history = load_chat_history()
+    user_data = history.get(username, {})
+
+    return jsonify(user_data)
+
+
+@main.route("/chat/new/<username>", methods=["POST"])
+def new_chat(username):
+    history = load_chat_history()
+    ensure_user_chat(history, username)
+
+    chat_id = f"chat_{len(history[username]['chats']) + 1}"
+    history[username]["chats"][chat_id] = {
+        "title": "Chat Baru",
+        "messages": []
+    }
+    history[username]["active_chat"] = chat_id
+
+    save_chat_history(history)
+
+    return jsonify({
+        "chat_id": chat_id
+    })
+
+@main.route("/chat/delete/<username>/<chat_id>", methods=["DELETE"])
+def delete_chat(username, chat_id):
+    history = load_chat_history()
+
+    if username not in history:
+        return jsonify({"message": "User tidak ditemukan"}), 404
+
+    chats = history[username].get("chats", {})
+
+    if chat_id not in chats:
+        return jsonify({"message": "Chat tidak ditemukan"}), 404
+
+    del chats[chat_id]
+
+    # Jika chat aktif terhapus, pindah ke chat terakhir
+    if history[username]["active_chat"] == chat_id:
+        history[username]["active_chat"] = next(iter(chats), None)
+
+    save_chat_history(history)
+    return jsonify({"message": "Chat berhasil dihapus"})

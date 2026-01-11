@@ -10,15 +10,16 @@ const ReactApexChart = dynamic(() => import("react-apexcharts"), {
 type DiagnosisItem = {
   name: string;
   value: number;
+  total: number;
+  symptoms: {
+    name: string;
+    percent: number;
+  }[];
 };
 
-const diagnosisData: DiagnosisItem[] = [
-  { name: "Sinusitis", value: 75 },
-  { name: "Pneumonia", value: 35 },
-  { name: "Bronkitis", value: 56 },
-];
 
-export default function DiagnosisResult() {
+
+export default function DiagnosisResult({ data }: { data: DiagnosisItem[] }) {
   return (
     <section className="mt-10 mb-4">
       <h2 className="text-center text-lg font-semibold text-gray-800 mb-5">
@@ -26,8 +27,13 @@ export default function DiagnosisResult() {
       </h2>
 
       <div className="flex flex-wrap justify-center gap-10">
-        {diagnosisData.map((item, i) => (
-          <DiagnosisCard key={i} name={item.name} value={item.value} />
+        {data.map((item, i) => (
+          <DiagnosisCard
+            key={i}
+            name={item.name}
+            value={item.value}
+            symptoms={item.symptoms}
+          />
         ))}
       </div>
     </section>
@@ -37,9 +43,14 @@ export default function DiagnosisResult() {
 type CardProps = {
   name: string;
   value: number;
+  symptoms: {
+    name: string;
+    percent: number;
+  }[]
 };
 
-function DiagnosisCard({ name, value }: CardProps) {
+
+function DiagnosisCard({ name, value, symptoms }: CardProps) {
   const series = [value];
 
   const options: any = {
@@ -109,7 +120,23 @@ function DiagnosisCard({ name, value }: CardProps) {
           width={200}
         />
       </div>
-      <div className="mt-2 text-sm font-medium text-gray-800">{name}</div>
+
+      <div className="mt-2 text-sm font-medium text-gray-800">
+        {name}
+      </div>
+
+      {/* <div className="mt-1 text-xs text-gray-500 text-center">
+        {matched} dari {total} gejala terpenuhi
+      </div> */}
+
+      <div className="mt-2 space-y-1 text-xs text-gray-600">
+        {symptoms.map((s, i) => (
+          <div key={i} className="flex justify-between">
+            <span className="mr-2">{s.name}</span>
+            <span>{s.percent}%</span>
+          </div>
+        ))}
+      </div>
     </div>
   );
 }

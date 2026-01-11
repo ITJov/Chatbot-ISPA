@@ -1,16 +1,53 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { UserOutlined, LockOutlined } from "@ant-design/icons";
+import { useRouter } from "next/navigation";
+
 
 export default function LoginPage() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const router = useRouter();
 
-  const handleSubmit = (e: any) => {
+  useEffect(() => {
+    const user = localStorage.getItem("user");
+    if (!user) {
+      router.push("/login");
+    }
+  }, []);
+
+  const handleSubmit = async (e: any) => {
     e.preventDefault();
-    console.log("Login with:", { username, password });
+
+    try {
+      const res = await fetch("http://127.0.0.1:5000/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ username, password }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        alert(data.message);
+        return;
+      }
+
+      // Simpan user login
+      localStorage.setItem("user", JSON.stringify(data.user));
+
+      // REDIRECT KE CHAT
+      router.push("/chat");
+
+    } catch (error) {
+      alert("Backend tidak terhubung");
+    }
   };
+
+
 
   return (
     <div className="login-root">

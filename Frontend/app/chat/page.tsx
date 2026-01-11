@@ -5,6 +5,9 @@ import { SendOutlined, LoadingOutlined } from "@ant-design/icons";
 import { chatSuggestions } from "./data";
 import DiagnosisResult from "../components/DiagnosisResult";
 import ListDokter from "../components/ListDokter";
+import { useRouter } from "next/navigation";
+import { LogoutOutlined } from "@ant-design/icons";
+import { DeleteOutlined } from "@ant-design/icons";
 
 type Message = {
   sender: "user" | "bot";
@@ -14,9 +17,12 @@ type Message = {
 export default function ChatPage() {
   const [input, setInput] = useState("");
   const [messages, setMessages] = useState<Message[]>([]);
-  const [userSentCount, setUserSentCount] = useState(0);
   const [showDiagnosis, setShowDiagnosis] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+
+  const [diagnosisData, setDiagnosisData] = useState<any[]>([]);
+  const [chatList, setChatList] = useState<any[]>([]);
+  const [activeChatId, setActiveChatId] = useState<string>("");
 
   // REFS
   const messagesContainerRef = useRef<HTMLDivElement | null>(null);
@@ -27,17 +33,63 @@ export default function ChatPage() {
 
   const BACKEND_URL = "http://127.0.0.1:5000/chat"; 
 
-  // ... (Sidebar Items sama seperti sebelumnya) ...
-  const sidebarItems = [
-    { title: "Gejala batuk berat", desc: "Merasakan nyeri dada..." },
-    { title: "Demam tinggi", desc: "Suhu badan di atas 38°C..." },
-    { title: "Sesak napas", desc: "Sulit bernapas saat beraktivitas..." },
-  ];
   const [activeSidebar, setActiveSidebar] = useState(0);
 
   const scrollToBottom = (behavior: ScrollBehavior = "smooth") => {
     messagesEndRef.current?.scrollIntoView({ behavior, block: "end" });
   };
+
+  const router = useRouter();
+  const [username, setUsername] = useState<string>("");
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const storedUser = localStorage.getItem("user");
+      if (!storedUser) {
+        router.push("/login");
+        return;
+      }
+
+      const user = JSON.parse(storedUser);
+      setUsername(user.username);
+    }
+  }, []);
+
+
+  // Load riwayat chat saat pertama dibuka
+  useEffect(() => {
+    if (!username) return;
+
+    fetch(`http://127.0.0.1:5000/chat/history/${username}`)
+      .then(res => res.json())
+      .then(data => {
+        const chats = data.chats || {};
+        const active = data.active_chat;
+
+        setChatList(
+          Object.entries(chats).map(([id, chat]: any) => ({
+            id,
+            title: chat.title,
+            messages: chat.messages
+          }))
+        );
+
+        setActiveChatId(active);
+
+        const current = chats[active];
+          if (current) {
+            setMessages(current.messages);
+
+            if (current.diagnosis?.is_confident) {
+              setDiagnosisData(current.diagnosis.top);
+              setShowDiagnosis(true);
+            } else {
+              setShowDiagnosis(false);
+            }
+          }
+      });
+  }, [username]);
+
 
   // 2. GENERATE ID BARU SETIAP KALI HALAMAN DI-REFRESH
   useEffect(() => {
@@ -58,7 +110,6 @@ export default function ChatPage() {
     setMessages((prev) => [...prev, newUserMessage]);
     setInput("");
     setIsLoading(true);
-    setUserSentCount((c) => c + 1);
 
     try {
       // 3. KIRIM SESSION ID KE BACKEND
@@ -68,20 +119,42 @@ export default function ChatPage() {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({ 
-            message: text, 
-            session_id: sessionIdRef.current // <--- INI KUNCINYA
-        }), 
+          message: text,
+          session_id: sessionIdRef.current,
+          username: username
+        }),
       });
 
       if (!response.ok) throw new Error("Gagal mengambil respon");
 
       const data = await response.json();
-      const botResponse = data.response || "Maaf, saya tidak mengerti."; 
+      const botResponse = data.response || "Maaf, saya tidak mengerti.";
+
+      if (data.diagnosis?.is_confident) {
+        setDiagnosisData(data.diagnosis.top);
+        setShowDiagnosis(true);
+      }
       
       setMessages((prev) => [
         ...prev,
         { sender: "bot", message: botResponse },
       ]);
+
+      setChatList(prev =>
+        prev.map(chat =>
+          chat.id === activeChatId
+            ? {
+                ...chat,
+                messages: [
+                  ...chat.messages,
+                  newUserMessage,
+                  { sender: "bot", message: botResponse }
+                ]
+              }
+            : chat
+        )
+      );
+
 
     } catch (error) {
       console.error("Error:", error);
@@ -89,6 +162,7 @@ export default function ChatPage() {
         ...prev,
         { sender: "bot", message: "Maaf, terjadi kesalahan koneksi ke server." },
       ]);
+      
     } finally {
       setIsLoading(false);
     }
@@ -101,44 +175,136 @@ export default function ChatPage() {
     }
   };
 
-  useEffect(() => {
-    if (userSentCount >= 5 && !showDiagnosis) {
-      setShowDiagnosis(true);
-    }
-  }, [userSentCount, showDiagnosis]);
 
   useEffect(() => {
     scrollToBottom("smooth");
   }, [messages, isLoading]);
+
+  const handleLogout = () => {
+    localStorage.removeItem("user");
+    router.push("/login");
+  };
+
+  const handleNewChat = async () => {
+    await fetch(`http://127.0.0.1:5000/chat/new/${username}`, {
+      method: "POST",
+    });
+
+    location.reload();
+  };
+
+  const handleDeleteChat = async (chatId: string) => {
+    await fetch(`http://127.0.0.1:5000/chat/delete/${username}/${chatId}`, {
+      method: "DELETE",
+    });
+
+    location.reload();
+  };
+
+
 
   return (
     <div className="w-screen h-screen flex items-stretch justify-center bg-gradient-to-br from-[#f7f4ff] via-[#e4e9ff] to-[#f8fbff]">
       <div className="w-full h-full bg-white/70 backdrop-blur-xl shadow-2xl lg:rounded-3xl overflow-hidden flex">
         
         {/* SIDEBAR */}
-        <aside className="w-64 h-full bg-white/90 border-r border-white/70 p-5 flex flex-col gap-4 hidden md:flex">
-          <h2 className="text-sm font-semibold text-gray-500">Riwayat Gejala</h2>
-          <div className="flex flex-col gap-3 mt-1">
-            {sidebarItems.map((item, i) => (
-              <button
-                key={i}
-                onClick={() => setActiveSidebar(i)}
-                className={`w-full text-left p-3 rounded-2xl transition border
-                  ${activeSidebar === i ? "bg-indigo-100 border-indigo-300" : "bg-indigo-50/60 hover:bg-indigo-100 border-transparent"}`}
+        <aside className="w-64 h-full bg-white/90 border-r border-indigo-200
+          flex flex-col hidden md:flex">
+
+          {/* HEADER SIDEBAR */}
+          <div className="p-5 border-b border-indigo-100 flex items-center justify-between">
+            <h2 className="text-sm font-semibold text-gray-500">
+              Riwayat Gejala
+            </h2>
+
+            <button
+              onClick={handleNewChat}
+              title="Chat Baru"
+              className="text-indigo-400 hover:text-indigo-600 text-xl"
+            >
+              ＋
+            </button>
+          </div>
+
+          {/* LIST CHAT (SCROLLABLE) */}
+          <div className="flex-1 overflow-y-auto p-3 space-y-2">
+            {chatList.map(chat => (
+              <div
+                key={chat.id}
+                className={`group relative rounded-2xl border transition
+                  ${activeChatId === chat.id
+                    ? "bg-indigo-100 border-indigo-300"
+                    : "bg-indigo-50/60 hover:bg-indigo-100 border-transparent"
+                  }`}
               >
-                <div className="font-semibold text-gray-800 text-sm">{item.title}</div>
-                <div className="text-xs text-gray-500 truncate">{item.desc}</div>
-              </button>
+                <button
+                  onClick={() => {
+                    setActiveChatId(chat.id);
+                    setMessages(chat.messages);
+
+                    if (chat.diagnosis?.is_confident) {
+                      setDiagnosisData(chat.diagnosis.top);
+                      setShowDiagnosis(true);
+                    } else {
+                      setShowDiagnosis(false);
+                    }
+                  }}
+                  className="w-full text-left p-3 pr-10"
+                >
+                  <div className="font-semibold text-gray-800 text-sm">
+                    {chat.title}
+                  </div>
+                  <div className="text-xs text-gray-500 truncate">
+                    {chat.messages.length > 0
+                      ? chat.messages[chat.messages.length - 1].message
+                      : "Chat baru"}
+                  </div>
+                </button>
+
+                {/* DELETE BUTTON */}
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleDeleteChat(chat.id);
+                  }}
+                  className="absolute right-2 top-2 opacity-0
+                    group-hover:opacity-100 transition
+                    text-gray-400 hover:text-red-500"
+                  title="Hapus chat"
+                >
+                  ✕
+                </button>
+              </div>
             ))}
           </div>
         </aside>
 
+
         {/* MAIN CHAT */}
         <main className="flex-1 h-full flex flex-col p-4 md:p-10 bg-gradient-to-b from-[#f9f7ff] via-[#f1f2ff] to-[#e4ebff]">
-          <div className="text-center mb-6">
-            <div className="text-indigo-300 text-xl tracking-[0.4em] mb-2">✦✦✦</div>
-            <h1 className="text-xl md:text-2xl font-medium text-gray-800">Hii, apa yang bisa saya bantu ?</h1>
+          <div className="relative mb-6">
+           
+            <button
+              onClick={handleLogout}
+              title="Logout"
+              className="absolute right-0 top-0 p-2 rounded-full
+                        text-gray-400 hover:text-red-500 hover:bg-red-50
+                        transition"
+            >
+              <LogoutOutlined className="text-lg" />
+            </button>
+
+            {/* HEADER TETAP DI TENGAH */}
+            <div className="text-center">
+              <div className="text-indigo-300 text-xl tracking-[0.4em] mb-2">
+                ✦✦✦
+              </div>
+              <h1 className="text-xl md:text-2xl font-medium text-gray-800">
+                Hii {username}, apa yang bisa saya bantu ?
+              </h1>
+            </div>
           </div>
+
 
           <div className="flex justify-center flex-wrap gap-3 mb-6">
             {chatSuggestions.map((s, i) => (
@@ -153,7 +319,7 @@ export default function ChatPage() {
             {messages.map((m, i) => (
               <div key={i}>
                 <div className="text-[10px] text-gray-400 font-semibold mb-1 uppercase tracking-wide">
-                  {m.sender === "user" ? "NATHANIEL VALENTINO R" : "AI CHATBOT"}
+                  {m.sender === "user" ? username : "AI CHATBOT"}
                 </div>
                 <div className={`inline-block px-4 py-3 rounded-2xl text-sm shadow-md whitespace-pre-wrap
                     ${m.sender === "user" ? "bg-white text-gray-800" : "bg-indigo-100 text-gray-800"}`}>
@@ -166,8 +332,11 @@ export default function ChatPage() {
                <div className="text-gray-400 text-xs italic ml-2 animate-pulse">AI sedang berpikir...</div>
             )}
 
-            {showDiagnosis && (
-              <div className="mt-8"><DiagnosisResult /><ListDokter /></div>
+            {showDiagnosis && diagnosisData.length > 0 && (
+              <div className="mt-8">
+                <DiagnosisResult data={diagnosisData} />
+                <ListDokter />
+              </div>
             )}
 
             <div ref={messagesEndRef} />
